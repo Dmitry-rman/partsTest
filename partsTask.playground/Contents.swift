@@ -7,8 +7,8 @@ class PersentConvertor{
         _divisor =  pow(10.0, Double(percentAccuracy))
     }
     
-    //Поскольку массив передается по значению в функцию, то размер в памяти примерно = 4 байт * Кол-во_входного_массива * 2 + 1
-    //Вычислительная сложность линейная O(n) * k, где k константа
+    //Поскольку массив передается по значению в функцию, то размер в памяти примерно = 4 байт * Кол-во_входного_массива * 2 + 29
+    //Вычислительная сложность линейная O(n) * k + n, где k, n константа
     func percentsOf2(parts: [Double]) -> [Double]?{
         
         for value in parts{
@@ -17,8 +17,8 @@ class PersentConvertor{
             }
         }
         
-        let roundRule:FloatingPointRoundingRule = .toNearestOrEven
-        let totalParts = (parts.reduce(0, +) * _divisor).rounded(roundRule)/_divisor //O(n)
+        let roundRule:FloatingPointRoundingRule = .toNearestOrEven //1 byte
+        let totalParts = (parts.reduce(0, +) * _divisor).rounded(roundRule)/_divisor //O(n)//4 byte
         //print(totalParts)
         var result = parts.map { (value) -> Double in //O(n)*5
             return (value * 100 * _divisor / totalParts).rounded(roundRule)/_divisor
@@ -26,14 +26,14 @@ class PersentConvertor{
         
         //Увеличиваем или уменьшаем последний разряд минимального числа чтобы сумму сошлась если это необходимо
         while true{
-            let sum = result.reduce(0, +)
-            let epsilon:Double = fabs(sum - 100.0)
-            let minAccuracy = 1/_divisor
+            let sum = result.reduce(0, +) //4 byte
+            let epsilon:Double = fabs(sum - 100.0)//4 byte
+            let minAccuracy = 1/_divisor //4 byte
             if epsilon >= minAccuracy {
-                let minValue = result.min()!
-                let changeValue = sum > 100.0 ? -minAccuracy : minAccuracy
+                let minValue = result.min()!//4 byte
+                let changeValue = sum > 100.0 ? -minAccuracy : minAccuracy //4 byte
                 //print(result)
-                if let row = result.index(where: {$0 == minValue}) {
+                if let row = result.index(where: {$0 == minValue}) { //4 byte
                     result[row] = minValue + changeValue
                 }
                 //print(result)
